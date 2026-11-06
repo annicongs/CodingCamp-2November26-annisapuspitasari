@@ -1,0 +1,12 @@
+{
+  "name": "todo-life-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node tests/properties.test.js"
+  },
+  "dependencies": {
+    "fast-check": "3.23.2",
+    "jsdom": "25.0.1"
+  }
+}

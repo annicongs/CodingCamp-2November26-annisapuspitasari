@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do Life Dashboard</title>
+
+  <!-- Inline theme-init: runs before CSS to prevent flash of wrong theme -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('tld_theme');
+      if (t === 'dark') document.documentElement.classList.add('theme-dark');
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Header / Theme Toggle -->
+  <header class="dashboard-header">
+    <h1 class="dashboard-title">Life Dashboard</h1>
+    <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle theme">☀️ Light Mode</button>
+  </header>
+
+  <main class="dashboard-main">
+
+    <!-- Greeting Widget -->
+    <section id="greeting-widget" class="widget widget--greeting" aria-label="Greeting">
+      <p id="greeting-date" class="greeting-date"></p>
+      <p id="greeting-time" class="greeting-time"></p>
+      <h2 id="greeting-text" class="greeting-text"></h2>
+    </section>
+
+    <!-- Timer Widget -->
+    <section id="timer-widget" class="widget widget--timer" aria-label="Focus Timer">
+      <h2 class="widget-title">Focus Timer</h2>
+      <div id="timer-display" class="timer-display" aria-live="polite">25:00</div>
+      <div id="timer-alert" class="alert-banner" role="alert" hidden></div>
+      <div class="timer-controls">
+        <button id="timer-start" class="btn btn-primary">Start</button>
+        <button id="timer-stop" class="btn btn-secondary">Stop</button>
+        <button id="timer-reset" class="btn btn-secondary">Reset</button>
+      </div>
+      <div class="timer-duration-form">
+        <label for="timer-duration-input" class="form-label">Session (minutes):</label>
+        <input
+          id="timer-duration-input"
+          class="form-input"
+          type="number"
+          min="1"
+          max="60"
+          placeholder="1–60"
+          aria-describedby="timer-duration-error"
+        />
+        <button id="timer-duration-set" class="btn btn-secondary">Set</button>
+        <span id="timer-duration-error" class="error-msg" role="alert"></span>
+      </div>
+    </section>
+
+    <!-- Todo Widget -->
+    <section id="todo-widget" class="widget widget--todo" aria-label="To-Do List">
+      <h2 class="widget-title">To-Do List</h2>
+      <form id="todo-add-form" class="todo-add-form" novalidate>
+        <input
+          id="todo-input"
+          class="form-input"
+          type="text"
+          placeholder="Add a new task…"
+          maxlength="100"
+          aria-label="New task title"
+          aria-describedby="todo-add-error"
+        />
+        <button type="submit" class="btn btn-primary">Add</button>
+        <span id="todo-add-error" class="error-msg" role="alert"></span>
+      </form>
+      <div class="todo-sort-bar">
+        <label for="todo-sort" class="form-label">Sort:</label>
+        <select id="todo-sort" class="form-select">
+          <option value="default">Default</option>
+          <option value="alpha">A–Z</option>
+          <option value="completed-last">Completed Last</option>
+        </select>
+      </div>
+      <ul id="todo-list" class="todo-list" aria-label="Task list"></ul>
+    </section>
+
+    <!-- Quick Links Widget -->
+    <section id="links-widget" class="widget widget--links" aria-label="Quick Links">
+      <h2 class="widget-title">Quick Links</h2>
+      <form id="links-add-form" class="links-add-form" novalidate>
+        <div class="links-field-group">
+          <input
+            id="links-label-input"
+            class="form-input"
+            type="text"
+            placeholder="Label"
+            aria-label="Link label"
+            aria-describedby="links-label-error"
+          />
+          <span id="links-label-error" class="error-msg" role="alert"></span>
+        </div>
+        <div class="links-field-group">
+          <input
+            id="links-url-input"
+            class="form-input"
+            type="url"
+            placeholder="https://example.com"
+            aria-label="Link URL"
+            aria-describedby="links-url-error"
+          />
+          <span id="links-url-error" class="error-msg" role="alert"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+      <ul id="links-list" class="links-list" aria-label="Quick links list"></ul>
+    </section>
+
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

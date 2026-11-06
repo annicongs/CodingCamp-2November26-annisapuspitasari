@@ -1,0 +1,791 @@
+/* ==========================================================================
+   To-Do Life Dashboard — Main Stylesheet
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CSS Custom Properties — Theme Tokens
+   Light mode is the default (:root). Dark mode overrides via .theme-dark,
+   which is applied to both <html> (FOUC prevention) and <body> (ThemeWidget).
+   All contrast ratios are WCAG AA compliant (4.5:1 normal, 3:1 large text).
+   ========================================================================== */
+
+:root {
+  /* --- Color tokens (Light Mode) ---------------------------------------- */
+  --color-bg:           #f5f7fa;    /* page background                        */
+  --color-surface:      #ffffff;    /* card / widget background               */
+  --color-text:         #1a1a2e;    /* primary text  — ~16:1 on #f5f7fa ✓    */
+  --color-text-muted:   #555577;    /* secondary text — ~6:1 on #f5f7fa ✓    */
+  --color-accent:       #4f46e5;    /* indigo accent (buttons, highlights)    */
+  --color-accent-hover: #4338ca;    /* darker indigo on hover                 */
+  --color-border:       #d1d5db;    /* subtle borders                         */
+  --color-error:        #dc2626;    /* validation / error messages            */
+  --color-success:      #16a34a;    /* completed-task / success state         */
+  --color-shadow:       rgba(0, 0, 0, 0.1); /* box-shadow colour             */
+
+  /* --- Typography -------------------------------------------------------- */
+  --font-family-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-base:   1rem;         /* 16 px                                  */
+  --font-size-sm:     0.875rem;     /* 14 px                                  */
+  --font-size-lg:     1.125rem;     /* 18 px                                  */
+  --font-size-xl:     1.5rem;       /* 24 px                                  */
+  --font-size-2xl:    2rem;         /* 32 px                                  */
+
+  /* --- Shape ------------------------------------------------------------- */
+  --border-radius:    0.5rem;       /* 8 px  — buttons, inputs, small cards   */
+  --border-radius-lg: 0.75rem;      /* 12 px — widget cards                   */
+
+  /* --- Spacing scale ----------------------------------------------------- */
+  --spacing-xs:  0.25rem;   /*  4 px */
+  --spacing-sm:  0.5rem;    /*  8 px */
+  --spacing-md:  1rem;      /* 16 px */
+  --spacing-lg:  1.5rem;    /* 24 px */
+  --spacing-xl:  2rem;      /* 32 px */
+
+  /* --- Motion ------------------------------------------------------------- */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
+
+/* --------------------------------------------------------------------------
+   Dark Mode overrides
+   Applied by ThemeWidget via <body class="theme-dark"> and by the inline
+   FOUC-prevention script via <html class="theme-dark">.
+   -------------------------------------------------------------------------- */
+.theme-dark {
+  --color-bg:           #0f172a;    /* slate-900 page background              */
+  --color-surface:      #1e293b;    /* slate-800 widget surface               */
+  --color-text:         #f1f5f9;    /* slate-100  — ~16:1 on #0f172a ✓       */
+  --color-text-muted:   #94a3b8;    /* slate-400  — ~4.6:1 on #1e293b ✓     */
+  --color-accent:       #818cf8;    /* indigo-400 — lighter for dark bg       */
+  --color-accent-hover: #6366f1;    /* indigo-500 on hover                    */
+  --color-border:       #334155;    /* slate-700 subtle borders               */
+  --color-error:        #f87171;    /* red-400 — readable on dark surfaces    */
+  --color-success:      #4ade80;    /* green-400 — readable on dark surfaces  */
+  --color-shadow:       rgba(0, 0, 0, 0.4); /* stronger shadow in dark mode   */
+}
+
+/* ==========================================================================
+   2. Base / Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent horizontal scroll at any viewport width */
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   3. Layout — Header
+   ========================================================================== */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 4px var(--color-shadow);
+  width: 100%;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   4. Layout — Main / Widget Grid
+   ========================================================================== */
+
+.dashboard-main {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+
+  /* Single-column by default (mobile-first) */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+}
+
+/* ==========================================================================
+   5. Widget Cards
+   ========================================================================== */
+
+.widget {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.widget-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   6. Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-text-muted);
+  color: var(--color-surface);
+}
+
+.btn-icon {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.btn-icon:hover {
+  background-color: var(--color-border);
+}
+
+/* ==========================================================================
+   7. Form Controls
+   ========================================================================== */
+
+.form-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.error-msg {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  display: block;
+  min-height: 1.2em;
+}
+
+/* ==========================================================================
+   8. Greeting Widget — see section 15a for full widget styles
+   ========================================================================== */
+
+/* ==========================================================================
+   9. Timer Widget — see section 15b for full widget styles
+   ========================================================================== */
+
+/* ==========================================================================
+   10. To-Do Widget — see section 15c for full widget styles
+   ========================================================================== */
+
+/* ==========================================================================
+   11. Quick Links Widget — see section 15d for full widget styles
+   ========================================================================== */
+
+/* ==========================================================================
+   12. Mobile Touch Targets  (viewport < 768 px)
+   Ensures all interactive controls meet the 44×44 px minimum (Req 6.6).
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .btn,
+  .btn-icon,
+  .btn-primary,
+  .btn-secondary {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-input,
+  .form-select {
+    min-height: 44px;
+  }
+
+  /* Checkbox touch target — wrap in a larger hit area */
+  .todo-item input[type="checkbox"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ==========================================================================
+   13. Responsive — Multi-column layout  (viewport ≥ 768 px)
+   Req 6.1: no horizontal scroll; Req 6.2: multi-column on ≥ 768 px.
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .dashboard-main {
+    /* 2-column grid: greeting + timer on top row, todo + links on bottom row */
+    grid-template-columns: repeat(2, 1fr);
+    padding: var(--spacing-xl) var(--spacing-xl);
+  }
+
+  /* Greeting spans full width — acts as a banner across both columns */
+  .widget--greeting {
+    grid-column: 1 / -1;
+  }
+
+  .timer-duration-form {
+    flex-wrap: nowrap;
+  }
+}
+
+/* ==========================================================================
+   14. Responsive — Wide layout  (viewport ≥ 1024 px)
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .dashboard-main {
+    /* Timer + Todo + Links on one row; greeting still spans full width */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ==========================================================================
+   15. Widget-Specific Styles — Task 8.3
+   All class names match the JS-generated DOM in app.js exactly.
+   All values reference CSS custom property tokens so both light and dark
+   themes work without any additional overrides.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   15a. Greeting Widget
+   Layout order in the DOM: #greeting-date → #greeting-time → #greeting-text
+   Visual order we want:  greeting heading (top) → time (large) → date (below)
+   We use order/flex to reorder without touching the HTML.
+   -------------------------------------------------------------------------- */
+
+.widget--greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Greeting heading — "Good Morning / Afternoon / Evening / Night" */
+#greeting-text {
+  order: 1;
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Large live clock — HH:MM:SS */
+#greeting-time {
+  order: 2;
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+/* Secondary date line — "Wednesday, November 6, 2026" */
+#greeting-date {
+  order: 3;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   15b. Timer Widget
+   -------------------------------------------------------------------------- */
+
+/* Prominent MM:SS display */
+#timer-display {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-md);
+  line-height: 1;
+}
+
+/* Completion alert banner (hidden by default; shown by JS) */
+.alert-banner {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  background-color: var(--color-accent);
+  color: #ffffff;
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-md);
+  /* Subtle pulse animation to attract attention */
+  animation: alert-pulse 1s ease-in-out infinite alternate;
+}
+
+.alert-banner[hidden] {
+  display: none;
+}
+
+@keyframes alert-pulse {
+  from { opacity: 1; }
+  to   { opacity: 0.75; }
+}
+
+/* Timer control buttons row */
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Duration input row */
+.timer-duration-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.timer-duration-form .form-label {
+  align-self: center;
+  white-space: nowrap;
+}
+
+.timer-duration-form .form-input {
+  flex: 1 1 80px;
+  min-width: 60px;
+}
+
+/* Inline validation error for duration */
+#timer-duration-error {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  min-height: 1.2em;
+}
+
+/* --------------------------------------------------------------------------
+   15c. Todo Widget
+   -------------------------------------------------------------------------- */
+
+/* Add-task form */
+.todo-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: flex-start;
+}
+
+.todo-add-form .form-input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Inline error below add-form */
+#todo-add-error {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  min-height: 1.2em;
+}
+
+/* Sort selector bar */
+.todo-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.todo-sort-bar .form-select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Task list */
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* Individual task item */
+.todo-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* Checkbox */
+.todo-item input[type="checkbox"] {
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Task title text */
+.todo-title {
+  flex: 1 1 0;
+  min-width: 0;
+  word-break: break-word;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  transition: color var(--transition-fast), text-decoration var(--transition-fast);
+}
+
+/* Completed task — Requirement 3.3: strikethrough + 50% opacity */
+.todo-item--completed {
+  opacity: 0.5;
+}
+
+.todo-item--completed .todo-title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Inline edit input (replaces title span when editing) */
+.todo-edit-input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.todo-edit-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+/* Edit button */
+.btn-edit {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-edit:hover {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn-edit:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Save button (inline edit confirm) */
+.btn-save {
+  flex-shrink: 0;
+  background-color: var(--color-success);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.btn-save:hover {
+  opacity: 0.85;
+}
+
+.btn-save:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Delete button — shared by Todo and Links */
+.btn-delete {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-delete:hover {
+  background-color: var(--color-error);
+  color: #ffffff;
+}
+
+.btn-delete:focus-visible {
+  outline: 3px solid var(--color-error);
+  outline-offset: 2px;
+}
+
+/* Inline error span inside a task item (shown during edit validation) */
+.todo-item .error-msg {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  min-height: 1.2em;
+}
+
+/* --------------------------------------------------------------------------
+   15d. Quick Links Widget
+   -------------------------------------------------------------------------- */
+
+/* Add-link form */
+.links-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: flex-start;
+}
+
+/* Each label/URL field group */
+.links-field-group {
+  flex: 1 1 140px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Inline error spans inside .links-field-group */
+#links-label-error,
+#links-url-error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  min-height: 1.2em;
+}
+
+/* Links list */
+.links-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* Individual link card row */
+.links-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-fast);
+}
+
+/* Label anchor */
+.links-anchor {
+  flex: 1 1 0;
+  min-width: 0;
+  color: var(--color-accent);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  transition: color var(--transition-fast);
+}
+
+.links-anchor:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.links-anchor:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   15e. Theme Toggle Button (page header)
+   Requirement 5.1: button is always visible; label reflects active theme.
+   The JS writes "☀️ Light Mode" when dark, "🌙 Dark Mode" when light.
+   -------------------------------------------------------------------------- */
+
+#theme-toggle {
+  /* Override .btn-icon defaults for a more prominent appearance */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+#theme-toggle:hover {
+  background-color: var(--color-border);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+#theme-toggle:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   15f. Mobile touch targets — boost widget control buttons to ≥ 44×44 px
+   Requirement 6.6: interactive controls on mobile ≥ 44×44 px.
+   (The base mobile breakpoint in section 12 covers .btn variants;
+   this block extends the same guarantee to todo/links micro-buttons.)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .btn-edit,
+  .btn-save,
+  .btn-delete {
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--spacing-sm);
+  }
+
+  .todo-item input[type="checkbox"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Stack timer controls vertically on very small screens */
+  .timer-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timer-controls .btn {
+    width: 100%;
+  }
+}
